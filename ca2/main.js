@@ -4,6 +4,12 @@ import {ShapeCard} from './shapecard.js';
 class game extends HTMLElement {
     constructor(){
         super();
+
+        this.firstCard = null;
+        this.secondCard = null;
+        this.clicks =0;
+        this.matches =0;
+
     }
 
     connectedCallback() {
@@ -15,57 +21,86 @@ class game extends HTMLElement {
         const totalCards = rows * cols;
         const pairs = totalCards/2;
 
-        console.log('Rows:', rows, 'Columns:', cols, 'Total Cards:', totalCards, 'Pairs:', pairs);
+        //cards into columns and rows
+        this.style.display ='grid';
+        this.style.gridTemplateColumns= `repeat(${cols}, 100px)`;
+        this.style.gap = '10px';
+        
 
         this.innerHTML= ShapeCard.getUniqueRandomCardsAsHTML(pairs, true);
 
         Array.from(this.getElementsByTagName('shape-card')).forEach((sc) =>{
-            sc.addEventListener('click',() =>{
-                sc.flip();
+            sc.addEventListener('click',() => {
+
+                //keep matched cards up
+                if(sc.isFaceUp()){
+                    return;
+                }
+
+                if(this.firstCard === null){
+                    this.firstCard = sc;
+                    this.clicks++;
+                    sc.flip();
+                }
+
+                else if(this.secondCard === null && sc !== this.firstCard){
+                    this.secondCard = sc;
+                    this.clicks++;
+                    sc.flip();
+
+                    if(this.firstCard.getAttribute('type')=== this.secondCard.getAttribute('type') && this.firstCard.getAttribute('colour')=== this.secondCard.getAttribute('colour')){
+                        console.log('Match');
+
+                        //set both card back to null so game can continue
+                        this.firstCard = null;
+                        this.secondCard = null;
+
+                        this.matches++;
+
+                        if(this.matches === pairs){
+
+                            this.innerHTML = '';
+                            this.style.display = 'block';
+
+                            const message = document.createElement('p');  
+                            message.innerText = 'You completed the game in ' + this.clicks + ' clicks!';
+                            this.appendChild(message);
+
+                            const restartButton = document.createElement('button');
+                            restartButton.innerText = 'Play Again';
+                            this.appendChild(restartButton);
+
+                            restartButton.addEventListener('click', () => {
+                                this.firstCard = null;
+                                this.secondCard = null;
+                                this.clicks = 0;
+                                this.matches = 0;
+                                
+                                this.connectedCallback();
+                            });
+                        }
+                    }
+
+                    else{
+                    console.log('Not a Match');
+
+                    setTimeout(() => {
+                        this.firstCard.flip();
+                        this.secondCard.flip();
+
+                        this.firstCard = null;
+                        this.secondCard = null;
+                    }, 500);
+
+                }
+
+            }
+
             });
         });
-
-
-
-
-
 
     }
 }
 
 customElements.define('game-play',game);
 
-
-
-
-
-/************************ BEGINNING OF EXAMPLES *******************************/
-/* example of generating several random unique cards
-   with the use of static method getUniqueRandomCardsAsHTML  */
-
-/*
-document.body.innerHTML += `
-    <h1>Generated unique cards</h1>
-    <p>
-        ${ShapeCard.getUniqueRandomCardsAsHTML(5, false)}
-    </p>
-`;
-/* example of generating several random unique cards, each with a duplicate,
-   also with the use of static method getUniqueRandomCardsAsHTML */
-
-/*
-document.body.innerHTML += `
-    <h1>Generated unique cards with duplicates (use this in your application)</h1>
-    <p>  
-        ${ShapeCard.getUniqueRandomCardsAsHTML(6, true)}
-    </p>
-`;
-
-/* example of flipping the cards:
-   when clicked, the card is flipped and a message is sent to the console using
-   the shape-card methods flip() and isFaceUp() *
-document.querySelectorAll('shape-card').forEach(sc => sc.addEventListener('click', e => {
-    e.target.flip();
-    console.log("Shape card is face up:", e.target.isFaceUp());
-}));
-/************************ END OF EXAMPLES *******************************/
