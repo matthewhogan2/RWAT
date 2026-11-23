@@ -1,0 +1,15 @@
+{
+  "name": "ca2",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "matthew hogan",
+  "type": "commonjs",
+  "main": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "^8.3.8"
+  }
+}
