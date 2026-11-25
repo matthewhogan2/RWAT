@@ -1,6 +1,6 @@
 import {ShapeCard} from './shapecard.js';
 import {db} from './firebase.js';
-import {collection,addDoc,serverTimestamp} from 'firebase/firestore';
+import {collection,addDoc,serverTimestamp,getDocs} from 'firebase/firestore';
 
 
 
@@ -82,9 +82,43 @@ class game extends HTMLElement {
                                 this.connectedCallback();
 
                             });
+                           
+                            //stage 3: average clicks button
+                            const averageButton = document.createElement('button');
+                            averageButton.innerText = 'Show Average Score';
+                            this.appendChild(averageButton);
 
+                            const averageMessage = document.createElement('p');
+                            this.appendChild(averageMessage);
+
+                            averageButton.addEventListener('click', async ()=> {
+                                const results = await getDocs(collection(db,'clicks'));
+                                console.log('Games played: ', results.size);
+
+                                let totalClicks = 0;
+
+                                results.forEach((doc)=>{
+                                    totalClicks = totalClicks + doc.data().clicks;
+                                });
+
+                                console.log('total clicks: ', totalClicks);
+
+                                if (results.size > 0){
+                                    const average = totalClicks / results.size;
+                                    console.log('Average clicks: ', average);
+
+                                    averageMessage.innerText = ('Your average amount of clicks to complete the game is ' +average.toFixed(1));
+                                }
+
+                                else{
+                                    averageMessage.innerText = 'No average';
+                                }
+                            });
+
+                          
+       
                             //stage 3: save the score to firestore 
-                                addDoc(collection(db, 'click'),{
+                                addDoc(collection(db, 'clicks'),{
                                     clicks: this.clicks,
                                     timestamp: serverTimestamp()
                                 }).then((error)=>{console.log('Saved')}).catch((error)=>{console.log('error saving:',error)});
