@@ -1,4 +1,7 @@
 import {ShapeCard} from './shapecard.js';
+import {db} from './firebase.js';
+import {collection,addDoc,serverTimestamp} from 'firebase/firestore';
+
 
 
 class game extends HTMLElement {
@@ -77,7 +80,15 @@ class game extends HTMLElement {
                                 this.matches = 0;
                                 
                                 this.connectedCallback();
+
                             });
+
+                            //stage 3: save the score to firestore 
+                                addDoc(collection(db, 'click'),{
+                                    clicks: this.clicks,
+                                    timestamp: serverTimestamp()
+                                }).then((error)=>{console.log('Saved')}).catch((error)=>{console.log('error saving:',error)});
+                        
                         }
                     }
 
