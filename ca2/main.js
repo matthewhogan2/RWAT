@@ -1,6 +1,7 @@
 import {ShapeCard} from './shapecard.js';
 import {db} from './firebase.js';
 import {collection,addDoc,serverTimestamp,getDocs} from 'firebase/firestore';
+import {calculatePairs,cardsMatch,calculateAverage} from './gameTests.js';
 
 
 
@@ -21,8 +22,7 @@ class game extends HTMLElement {
         const rows = Number(dimensions[0]);
         const cols = Number(dimensions[1]);
 
-        const totalCards = rows * cols;
-        const pairs = totalCards/2;
+        const pairs = calculatePairs(rows, cols);
 
         //cards into columns and rows
         this.style.display ='grid';
@@ -51,8 +51,7 @@ class game extends HTMLElement {
                     this.clicks++;
                     sc.flip();
 
-                    if(this.firstCard.getAttribute('type')=== this.secondCard.getAttribute('type') && this.firstCard.getAttribute('colour')=== this.secondCard.getAttribute('colour')){
-                        console.log('Match');
+                    if(cardsMatch(this.firstCard, this.secondCard)){
 
                         //set both card back to null so game can continue
                         this.firstCard = null;
@@ -104,7 +103,7 @@ class game extends HTMLElement {
                                 console.log('total clicks: ', totalClicks);
 
                                 if (results.size > 0){
-                                    const average = totalClicks / results.size;
+                                    const average = calculateAverage(totalClicks,results.size);
                                     console.log('Average clicks: ', average);
 
                                     averageMessage.innerText = ('Your average amount of clicks to complete the game is ' +average.toFixed(1));

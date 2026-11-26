@@ -4,12 +4,14 @@
   "description": "",
   "license": "ISC",
   "author": "matthew hogan",
-  "type": "commonjs",
-  "main": "module",
+  "type": "module",
+  "main": "main.js",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
+    "jest": "^30.5.2",
     "vite": "^8.3.8"
   },
   "dependencies": {
