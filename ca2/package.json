@@ -8,7 +8,8 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "build": "vite build"
   },
   "devDependencies": {
     "jest": "^30.5.2",
